@@ -1,4 +1,8 @@
 //Calcular pagos en cuotas.
+const divBotones = document.createElement("div");
+divBotones.classList = "container d-flex justify-content-evenly my-4";
+divBotones.id = "divCuotas";
+divBotones.innerHTML = `<h2 class="p-2 bg-success text-white rounded-1 mt-1 px-5" id="h2">Elija las Cuotas:</h2>`;
 
 const addBoton = (textoBoton, clases, id, value) => {
   let boton = document.createElement("button");
@@ -10,14 +14,41 @@ const addBoton = (textoBoton, clases, id, value) => {
   return boton;
 };
 
+const inputVacio = () => {
+  let cantidadAPagar = document.getElementById("cantidad-a-pagar");
+  if (UI.contains(cantidadAPagar)) {
+    cantidadAPagar.remove();
+  }
+
+  let div = document.createElement("div");
+  div.classList = "text-dark bg-danger text-center rounded-1 p-1 mx-5 mt-4";
+  div.innerHTML = `<p class="text-center fs-2 my-1 fw-semibold">Debe Igresar un monto!</p>`;
+  UI.append(div);
+
+  window.setTimeout(() => {
+    div.remove();
+  }, 3000);
+};
+
 const msjFinal = () => {
   let cantidadAPagar = document.createElement("div");
-  cantidadAPagar.classList =
-    "container bg-success text-white text-center p-2 rounded-1 my-2";
-  cantidadAPagar.innerHTML = `Usted deberá pagar ${cuotasUsuario} cuotas de ${
-    parseInt(dineroUsuario.value) / cuotasUsuario
-  }`;
   cantidadAPagar.id = "cantidad-a-pagar";
+
+  if (!cuotasUsuario) {
+    cantidadAPagar.innerHTML = "Debe ingresar un número!";
+    cantidadAPagar.classList =
+      "container bg-danger text-dark text-center rounded-1 my-2 fs-3";
+
+    window.setTimeout(() => {
+      cantidadAPagar.remove();
+    }, 6000);
+  } else {
+    cantidadAPagar.classList =
+      "container bg-success text-white text-center p-2 rounded-1 my-2 fs-4";
+    cantidadAPagar.innerHTML = `Usted deberá pagar ${cuotasUsuario} cuotas de ${
+      Math.floor(parseInt(dineroUsuario.value) / cuotasUsuario) + 1
+    } pesos`;
+  }
 
   window.setTimeout(() => {
     let cuotasAPagar = document.getElementById("cantidad-a-pagar");
@@ -36,6 +67,9 @@ const botones = [
   addBoton("12 CUOTAS", "btn btn-info text-center", "boton-cuota", 12),
   addBoton("OTRO", "btn btn-info text-center", "cuotas-personalizadas", "OTRO"),
 ];
+botones.forEach((boton) => {
+  divBotones.append(boton);
+});
 
 const UI = document.getElementById("UI");
 const dineroUsuario = document.getElementById("dinero-usuario");
@@ -45,31 +79,22 @@ const titulo = document.getElementById("titulo");
 let cuotasUsuario;
 
 btnEnviar.addEventListener("click", () => {
-  if (dineroUsuario.value === "") {
-    let div = document.createElement("div");
-    div.classList = "text-dark bg-danger text-center rounded-1 p-1 mx-5 my-1";
-    div.innerHTML = "Debe Ingresar un Monto!";
-    UI.append(div);
-    window.setTimeout(() => {
-      div.remove();
-    }, 3000);
+  if (dineroUsuario.value === "" || !parseInt(dineroUsuario.value)) {
+    inputVacio();
   } else {
-    const dinero = parseInt(dineroUsuario.value);
-
-    const div = document.createElement("div");
-    div.classList = "container d-flex justify-content-evenly my-2";
-
-    botones.forEach((boton) => {
-      div.append(boton);
-    });
-
-    UI.append(div);
+    if (!UI.contains(divBotones)) {
+      UI.append(divBotones);
+    }
 
     const botonesHTML = document.querySelectorAll("#boton-cuota");
     botonesHTML.forEach((el) => {
       el.addEventListener("click", () => {
-        cuotasUsuario = parseInt(el.value);
-        msjFinal();
+        if (dineroUsuario.value === "" || !parseInt(dineroUsuario.value)) {
+          inputVacio();
+        } else {
+          cuotasUsuario = parseInt(el.value);
+          msjFinal();
+        }
       });
     });
 
@@ -77,8 +102,12 @@ btnEnviar.addEventListener("click", () => {
       "cuotas-personalizadas"
     );
     cuotasPersonalizadas.addEventListener("click", () => {
-      cuotasUsuario = parseInt(prompt("Ingrese la cantidad personalizada: "));
-      msjFinal();
+      if (dineroUsuario.value === "" || !parseInt(dineroUsuario.value)) {
+        inputVacio();
+      } else {
+        cuotasUsuario = parseInt(prompt("Ingrese una cantidad de cuotas:"));
+        msjFinal();
+      }
     });
   }
 });
