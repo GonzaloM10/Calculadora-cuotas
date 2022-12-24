@@ -47,11 +47,13 @@ const msjFinal = () => {
       cantidadAPagar.remove();
     }, 6000);
   } else {
+    let montoAPagar = (valorDineroUsuario + interes) / cuotasUsuario;
+    let totalConInteres = valorDineroUsuario + interes;
     cantidadAPagar.classList =
       "container bg-dark text-white text-center p-2 rounded-1 my-2 fs-4";
-    cantidadAPagar.innerHTML = `Usted deberá pagar ${cuotasUsuario} cuotas de ${Math.floor(
-      (valorDineroUsuario + interes) / cuotasUsuario
-    )} pesos (Interes: 6%)`;
+    cantidadAPagar.innerHTML = `Usted deberá pagar ${cuotasUsuario} cuotas de ${montoAPagar.toFixed(
+      2
+    )} pesos (Total: ${totalConInteres}, Interes: 6%)`;
   }
 
   window.setTimeout(() => {
@@ -100,7 +102,7 @@ btnEnviar.addEventListener("click", () => {
     inputVacio();
   } else {
     valorDineroUsuario = parseInt(dineroUsuario.value);
-    interes = valorDineroUsuario * 0.6;
+    interes = valorDineroUsuario * 0.06;
     dineroUsuario.value = "";
 
     entradaUsuario.innerHTML = `Usted ingresó <span class="fw-bold">${valorDineroUsuario}</span> pesos.`;
